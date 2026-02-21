@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <color name="black">#FF000000</color>
+    <color name="purple_primary" tools:ignore="DuplicateDefinition">#9C27B0</color> <!-- Основной фиолетовый -->
+    <color name="purple_dark">#4A148C</color>
+    <color name="pink_accent">#E040FB</color>
+    <color name="white">#FFFFFF</color>
+    <color name="light_gray_bg">#F5F5F5</color>
+    <color name="input_bg">#EEEEEE</color>
+    <color name="text_black">#1A1A1A</color>
+    <color name="error_red">#D32F2F</color>
+</resources>

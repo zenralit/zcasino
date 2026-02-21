@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">Z-казино</string>
+
+    <!-- Login Screen -->
+    <string name="login_title">авторизация</string>
+    <string name="hint_email">email</string>
+    <string name="hint_password">password</string>
+    <string name="forgot_pass">забыли пароль?</string>
+    <string name="no_account">нет аккаунта? создайте его</string>
+    <string name="btn_login">войти</string>
+
+    <!-- Registration Screen -->
+    <string name="reg_title">регистрация</string>
+    <string name="hint_surname">фамилия</string>
+    <string name="hint_name">имя</string>
+    <string name="hint_patronymic">отчество</string>
+    <string name="hint_dob">дата рождения</string>
+    <string name="hint_gender">пол</string>
+    <string name="hint_email_phone">email / телефон</string>
+    <string name="hint_confirm_pass">подтвердите пароль</string>
+
+    <string name="check_agreement">пользовательское соглашение</string>
+    <string name="check_personal">соглашение о персональных данных</string>
+    <string name="check_responsibility">отказ от ответственности</string>
+
+    <string name="btn_register">регистрация</string>
+    <string name="have_account">уже есть аккаунт? войти</string>
+
+    <string name="pass_hint_title">!!!!!!!!!!!!!!!</string>
+    <string name="pass_req_1">пароль должен содержать</string>
+    <string name="pass_req_2">• от 6 символов(в том числе цифры)</string>
+    <string name="pass_req_3">• спец. символы</string>
+    <string name="pass_req_4">• ответ на 6 слово в кроссворде на 36 странице "Комсомольская правда"</string>
+</resources>
