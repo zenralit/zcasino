@@ -20,6 +20,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".RegistrationActivity" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true" />
     </application>
 
 </manifest>
