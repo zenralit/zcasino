@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "912104596332",
+    "firebase_url": "https://zkazino-5f007-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "zkazino-5f007",
+    "storage_bucket": "zkazino-5f007.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:912104596332:android:e1217473db5ac693a90949",
+        "android_client_info": {
+          "package_name": "com.example.zkazino"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAFzDDTGD-3Js27-bNzjEBmmPQgeaqG-cY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
