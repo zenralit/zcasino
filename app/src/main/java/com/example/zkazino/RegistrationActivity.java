@@ -113,6 +113,8 @@ public class RegistrationActivity extends AppCompatActivity {
         db.collection("users").document(userId)
                 .set(user)
                 .addOnSuccessListener(aVoid -> {
+                    db.collection("users").document(userId)
+                            .update("balance", 1000);
                     Toast.makeText(this, "Регистрация успешна!", Toast.LENGTH_SHORT).show();
                     // Переход на главный экран или логин
                     finish();
@@ -120,5 +122,6 @@ public class RegistrationActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Ошибка БД: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
+
     }
 }
