@@ -18,27 +18,22 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    // Firebase
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private DocumentReference userRef;
 
-    // UI элементы
     private TextView tvReel1, tvReel2, tvReel3, tvResult;
     private TextView tvBalance, tvUserEmail;
     private Button btnSpin;
     private ImageButton btnMenu;
     private DrawerLayout drawerLayout;
 
-    // Меню
     private TextView menuProfile, menuHistory, menuSettings, menuLogout;
 
-    // Логика слотов
     private Random random = new Random();
     private boolean isSpinning = false;
     private String[] symbols = {"🍒", "🍋", "🍊", "⭐", "💎", "7️⃣"};
 
-    // Баланс
     private int balance = 1000;
     private static final int SPIN_COST = 50;
 
@@ -47,11 +42,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Инициализация Firebase
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        // Проверка авторизации
         FirebaseUser user = mAuth.getCurrentUser();
         if (user == null) {
             startActivity(new Intent(this, LoginActivity.class));
@@ -59,14 +52,11 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        // Ссылка на документ пользователя
         userRef = db.collection("users").document(user.getUid());
 
-        // Инициализация UI
         initViews();
         setupListeners();
 
-        // Загрузка данных пользователя
         loadUserData(user);
     }
 
@@ -81,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
         btnMenu = findViewById(R.id.btnMenu);
         drawerLayout = findViewById(R.id.drawerLayout);
 
-        // Меню
         menuProfile = findViewById(R.id.menuProfile);
         menuHistory = findViewById(R.id.menuHistory);
         menuSettings = findViewById(R.id.menuSettings);
@@ -89,10 +78,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupListeners() {
-        // Бургер меню
         btnMenu.setOnClickListener(v -> drawerLayout.open());
 
-        // SPIN кнопка
         btnSpin.setOnClickListener(v -> {
             if (!isSpinning) {
                 if (balance >= SPIN_COST) {
@@ -105,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Пункты меню
         menuLogout.setOnClickListener(v -> logout());
         menuProfile.setOnClickListener(v -> {
             Toast.makeText(this, "Профиль в разработке", Toast.LENGTH_SHORT).show();
@@ -124,7 +110,6 @@ public class MainActivity extends AppCompatActivity {
     private void loadUserData(FirebaseUser user) {
         tvUserEmail.setText(user.getEmail());
 
-        // Можно загрузить баланс из Firestore
         userRef.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
                 Long savedBalance = documentSnapshot.getLong("balance");
@@ -141,7 +126,6 @@ public class MainActivity extends AppCompatActivity {
         btnSpin.setEnabled(false);
         tvResult.setText("🎰 Крутим...");
 
-        // Анимация кручения
         for (int i = 0; i < 15; i++) {
             final int delay = i * 80;
             new Handler().postDelayed(() -> {
@@ -151,7 +135,6 @@ public class MainActivity extends AppCompatActivity {
             }, delay);
         }
 
-        // Финальный результат
         new Handler().postDelayed(() -> {
             String result1 = symbols[random.nextInt(symbols.length)];
             String result2 = symbols[random.nextInt(symbols.length)];

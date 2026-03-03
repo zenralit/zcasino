@@ -19,7 +19,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Карточка авторизации -->
     <androidx.cardview.widget.CardView
         android:id="@+id/cardLogin"
         android:layout_width="0dp"
