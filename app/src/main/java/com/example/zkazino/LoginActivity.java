@@ -19,12 +19,10 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class LoginActivity extends AppCompatActivity {
 
-    // Переменные для View (элементы интерфейса)
     EditText etEmail, etPassword;
     Button btnLogin;
     TextView tvCreateAccount, tvForgotPass;
 
-    // Переменные для Firebase
     private FirebaseAuth mAuth;
 
     @Override
@@ -32,24 +30,20 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // 1. Инициализация Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
-        // 2. Привязываем элементы из XML к коду
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
         tvCreateAccount = findViewById(R.id.tvCreateAccount);
         tvForgotPass = findViewById(R.id.tvForgotPass);
 
-        // 3. Кнопка "Войти"
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String email = etEmail.getText().toString().trim();
                 String pass = etPassword.getText().toString();
 
-                // Проверка на пустоту
                 if (email.isEmpty()) {
                     etEmail.setError("Введите email");
                     return;
@@ -64,12 +58,10 @@ public class LoginActivity extends AppCompatActivity {
                         .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                             @Override
                             public void onSuccess(AuthResult authResult) {
-                                // Успешный вход
                                 Toast.makeText(LoginActivity.this, "Вход успешен!", Toast.LENGTH_SHORT).show();
 
-                                // Здесь можно перейти на главный экран
-                                // startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                                // finish();
+                                 startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                 finish();
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
@@ -82,7 +74,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        // 4. Кнопка "Нет аккаунта? Создайте его" -> Переход на регистрацию
         tvCreateAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,7 +81,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        // 5. Кнопка "Забыли пароль?" (заглушка)
         tvForgotPass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -99,13 +89,11 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    // Проверка: если пользователь уже вошёл, не показываем экран логина
     @Override
     protected void onStart() {
         super.onStart();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
-            // Пользователь уже авторизован
              startActivity(new Intent(this, MainActivity.class));
              finish();
         }

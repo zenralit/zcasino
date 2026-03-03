@@ -9,4 +9,7 @@
     <color name="input_bg">#EEEEEE</color>
     <color name="text_black">#1A1A1A</color>
     <color name="error_red">#D32F2F</color>
+    <color name="roulette_red">#E53935</color>
+    <color name="roulette_black">#212121</color>
+    <color name="roulette_green">#4CAF50</color>
 </resources>

@@ -8,7 +8,6 @@ public class UserModel {
     private String phone;
     private String gender;
 
-    // Пустой конструктор нужен для Firebase
     public UserModel() {}
 
     public UserModel(String email, String surname, String name, String patronymic, String phone, String gender) {
@@ -20,7 +19,6 @@ public class UserModel {
         this.gender = gender;
     }
 
-    // Геттеры и Сеттеры (обязательно для Firestore)
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
     public String getSurname() { return surname; }
