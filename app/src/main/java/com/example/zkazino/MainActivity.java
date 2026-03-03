@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -17,12 +18,18 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
-
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private DocumentReference userRef;
 
     private TextView tvReel1, tvReel2, tvReel3, tvResult;
+
+    private View rouletteCircle;
+    private TextView rouletteResult, tvRouletteResult;
+    private Button btnRed, btnBlack, btnGreen;
+    private Button btnBetMinus, btnBetPlus, btnRouletteSpin;
+    private TextView tvRouletteBet;
+
     private TextView tvBalance, tvUserEmail;
     private Button btnSpin;
     private ImageButton btnMenu;
@@ -32,7 +39,13 @@ public class MainActivity extends AppCompatActivity {
 
     private Random random = new Random();
     private boolean isSpinning = false;
-    private String[] symbols = {"🍒", "🍋", "🍊", "⭐", "💎", "7️⃣"};
+    private String[] symbols = {"🍒", "🍋", "⭐",  "7️⃣"};
+
+    private boolean isRouletteSpinning = false;
+    private int selectedColor = 0; // 0=none, 1=red, 2=black, 3=green
+    private int rouletteBet = 100;
+    private int[] rouletteNumbers = {0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26};
+    private int[] redNumbers = {1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36};
 
     private int balance = 1000;
     private static final int SPIN_COST = 50;
@@ -56,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
 
         initViews();
         setupListeners();
-
         loadUserData(user);
     }
 
@@ -65,6 +77,18 @@ public class MainActivity extends AppCompatActivity {
         tvReel2 = findViewById(R.id.tvReel2);
         tvReel3 = findViewById(R.id.tvReel3);
         tvResult = findViewById(R.id.tvResult);
+
+        rouletteCircle = findViewById(R.id.rouletteCircle);
+        rouletteResult = findViewById(R.id.rouletteResult);
+        tvRouletteResult = findViewById(R.id.tvRouletteResult);
+        btnRed = findViewById(R.id.btnRed);
+        btnBlack = findViewById(R.id.btnBlack);
+        btnGreen = findViewById(R.id.btnGreen);
+        btnBetMinus = findViewById(R.id.btnBetMinus);
+        btnBetPlus = findViewById(R.id.btnBetPlus);
+        btnRouletteSpin = findViewById(R.id.btnRouletteSpin);
+        tvRouletteBet = findViewById(R.id.tvRouletteBet);
+
         tvBalance = findViewById(R.id.tvBalance);
         tvUserEmail = findViewById(R.id.tvUserEmail);
         btnSpin = findViewById(R.id.btnSpin);
@@ -85,13 +109,56 @@ public class MainActivity extends AppCompatActivity {
                 if (balance >= SPIN_COST) {
                     balance -= SPIN_COST;
                     updateBalance();
-                    spin();
+                    spinSlots();
                 } else {
                     Toast.makeText(this, "Недостаточно средств!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
+        btnRed.setOnClickListener(v -> {
+            selectedColor = 1;
+            highlightColorButton(btnRed);
+        });
+        btnBlack.setOnClickListener(v -> {
+            selectedColor = 2;
+            highlightColorButton(btnBlack);
+        });
+        btnGreen.setOnClickListener(v -> {
+            selectedColor = 3;
+            highlightColorButton(btnGreen);
+        });
+
+        btnBetPlus.setOnClickListener(v -> {
+            if (rouletteBet < 500 && balance >= rouletteBet + 50) {
+                rouletteBet += 50;
+                tvRouletteBet.setText("$ " + rouletteBet);
+            }
+        });
+        btnBetMinus.setOnClickListener(v -> {
+            if (rouletteBet > 50) {
+                rouletteBet -= 50;
+                tvRouletteBet.setText("$ " + rouletteBet);
+            }
+        });
+
+        btnRouletteSpin.setOnClickListener(v -> {
+            if (!isRouletteSpinning) {
+                if (selectedColor == 0) {
+                    Toast.makeText(this, "Выберите цвет!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (balance < rouletteBet) {
+                    Toast.makeText(this, "Недостаточно средств!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                balance -= rouletteBet;
+                updateBalance();
+                spinRoulette();
+            }
+        });
+
+        // Меню
         menuLogout.setOnClickListener(v -> logout());
         menuProfile.setOnClickListener(v -> {
             Toast.makeText(this, "Профиль в разработке", Toast.LENGTH_SHORT).show();
@@ -105,6 +172,20 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Настройки в разработке", Toast.LENGTH_SHORT).show();
             drawerLayout.close();
         });
+    }
+
+    private void highlightColorButton(Button selected) {
+        btnRed.setBackgroundTintList(getColorStateList(android.R.color.darker_gray));
+        btnBlack.setBackgroundTintList(getColorStateList(android.R.color.darker_gray));
+        btnGreen.setBackgroundTintList(getColorStateList(android.R.color.darker_gray));
+
+        if (selected == btnRed) {
+            btnRed.setBackgroundTintList(getColorStateList(android.R.color.holo_red_dark));
+        } else if (selected == btnBlack) {
+            btnBlack.setBackgroundTintList(getColorStateList(android.R.color.black));
+        } else if (selected == btnGreen) {
+            btnGreen.setBackgroundTintList(getColorStateList(android.R.color.holo_green_dark));
+        }
     }
 
     private void loadUserData(FirebaseUser user) {
@@ -121,10 +202,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void spin() {
+    private void spinSlots() {
         isSpinning = true;
         btnSpin.setEnabled(false);
-        tvResult.setText("🎰 Крутим...");
+        tvResult.setText("Крутим...");
 
         for (int i = 0; i < 15; i++) {
             final int delay = i * 80;
@@ -144,22 +225,22 @@ public class MainActivity extends AppCompatActivity {
             tvReel2.setText(result2);
             tvReel3.setText(result3);
 
-            checkWin(result1, result2, result3);
+            checkSlotWin(result1, result2, result3);
 
             isSpinning = false;
             btnSpin.setEnabled(true);
         }, 1300);
     }
 
-    private void checkWin(String r1, String r2, String r3) {
+    private void checkSlotWin(String r1, String r2, String r3) {
         int winAmount = 0;
 
         if (r1.equals("7️⃣") && r2.equals("7️⃣") && r3.equals("7️⃣")) {
             winAmount = 5000;
-            tvResult.setText("🔥 ДЖЕКПОТ! 777! +$" + winAmount);
+            tvResult.setText("ДЖЕКПОТ! 777! +$" + winAmount);
         } else if (r1.equals("💎") && r2.equals("💎") && r3.equals("💎")) {
             winAmount = 1000;
-            tvResult.setText("💎 ТРИ АЛМАЗА! +$" + winAmount);
+            tvResult.setText("ТРИ АЛМАЗА! +$" + winAmount);
         } else if (r1.equals(r2) && r2.equals(r3)) {
             winAmount = 200;
             tvResult.setText("ТРИ ОДИНАКОВЫХ! +$" + winAmount);
@@ -169,6 +250,86 @@ public class MainActivity extends AppCompatActivity {
         } else {
             tvResult.setText("❌ Попробуй ещё раз");
         }
+
+        if (winAmount > 0) {
+            balance += winAmount;
+            updateBalance();
+            saveBalance();
+        }
+    }
+
+    private void spinRoulette() {
+        isRouletteSpinning = true;
+        btnRouletteSpin.setEnabled(false);
+        tvRouletteResult.setText("Крутим рулетку...");
+
+        RotateAnimation rotate = new RotateAnimation(
+                0, 720,
+                RotateAnimation.RELATIVE_TO_SELF, 0.5f,
+                RotateAnimation.RELATIVE_TO_SELF, 0.5f
+        );
+        rotate.setDuration(2000);
+        rotate.setFillAfter(true);
+        rouletteCircle.startAnimation(rotate);
+
+        new Handler().postDelayed(() -> {
+            int finalNumber = rouletteNumbers[random.nextInt(rouletteNumbers.length)];
+            rouletteResult.setText(String.valueOf(finalNumber));
+
+            int resultColor = 0;
+            if (finalNumber == 0) {
+                resultColor = 0;
+                rouletteResult.setBackgroundColor(getColor(android.R.color.holo_green_dark));
+            } else if (isRedNumber(finalNumber)) {
+                resultColor = 1;
+                rouletteResult.setBackgroundColor(getColor(android.R.color.holo_red_dark));
+            } else {
+                resultColor = 2;
+                rouletteResult.setBackgroundColor(getColor(android.R.color.black));
+            }
+
+            checkRouletteWin(finalNumber, resultColor);
+
+            isRouletteSpinning = false;
+            btnRouletteSpin.setEnabled(true);
+        }, 2000);
+    }
+
+    private boolean isRedNumber(int number) {
+        for (int red : redNumbers) {
+            if (red == number) return true;
+        }
+        return false;
+    }
+
+    private void checkRouletteWin(int number, int resultColor) {
+        int winAmount = 0;
+        String resultText = "";
+
+        if (resultColor == 0) {
+            if (selectedColor == 3) {
+                winAmount = rouletteBet * 35;
+                resultText = "ЗЕРО! Выигрыш x35! +$" + winAmount;
+            } else {
+                resultText = "0️⃣ Зеро! Вы проиграли";
+            }
+        } else if (resultColor == 1) {
+            if (selectedColor == 1) {
+                winAmount = rouletteBet * 2;
+                resultText = "🔴 КРАСНОЕ! Выигрыш x2! +$" + winAmount;
+            } else {
+                resultText = "🔴 Красное! Вы проиграли";
+            }
+        } else if (resultColor == 2) {
+            if (selectedColor == 2) {
+                winAmount = rouletteBet * 2;
+                resultText = "⚫ ЧЁРНОЕ! Выигрыш x2! +$" + winAmount;
+            } else {
+                resultText = "⚫ Чёрное! Вы проиграли";
+            }
+        }
+
+        tvRouletteResult.setText(resultText + " (выпало " + number + ")");
 
         if (winAmount > 0) {
             balance += winAmount;
