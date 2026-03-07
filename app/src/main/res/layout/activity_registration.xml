@@ -35,7 +35,6 @@
             android:orientation="vertical"
             android:paddingHorizontal="24dp">
 
-            <!-- Карточка регистрации -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -94,34 +93,50 @@
                         android:paddingStart="12dp"
                         android:layout_marginTop="12dp"/>
 
-                    <!-- Дата и Пол -->
-                    <LinearLayout
+                    <!-- Дата рождения -->
+                    <TextView
+                        android:id="@+id/tvDob"
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp"
+                        android:background="@drawable/bg_input"
+                        android:hint="Дата рождения"
+                        android:paddingStart="12dp"
+                        android:paddingTop="12dp"
+                        android:clickable="true"
+                        android:focusable="false"
+                        android:layout_marginTop="12dp"/>
+
+                    <!-- Пол -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Пол:"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_black"
+                        android:layout_marginTop="12dp"
+                        android:layout_marginBottom="8dp"/>
+
+                    <RadioGroup
+                        android:id="@+id/rgGender"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:weightSum="2"
-                        android:layout_marginTop="12dp">
+                        android:orientation="horizontal">
 
-                        <EditText
-                            android:id="@+id/etDob"
+                        <RadioButton
+                            android:id="@+id/rbMale"
                             android:layout_width="0dp"
-                            android:layout_height="45dp"
-                            android:layout_weight="1.5"
-                            android:background="@drawable/bg_input"
-                            android:hint="@string/hint_dob"
-                            android:paddingStart="12dp"
-                            android:focusable="false"
-                            android:clickable="true"/>
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Мужской"
+                            android:checked="true"/>
 
-                        <androidx.appcompat.widget.SwitchCompat
-                            android:id="@+id/swGender"
+                        <RadioButton
+                            android:id="@+id/rbFemale"
                             android:layout_width="0dp"
-                            android:layout_height="45dp"
-                            android:layout_weight="0.5"
-                            android:text="M"
-                            android:textColor="@color/purple_primary"
-                            android:layout_marginStart="8dp"/>
-                    </LinearLayout>
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Женский"/>
+                    </RadioGroup>
 
                     <EditText
                         android:id="@+id/etEmailPhone"
@@ -132,8 +147,7 @@
                         android:paddingStart="12dp"
                         android:layout_marginTop="12dp"/>
 
-                    <!-- БЛОК ПОДСКАЗКИ ПАРОЛЯ (ИСПРАВЛЕННЫЙ) -->
-                    <!-- Заменили CardView на LinearLayout с фоном bg_error_box -->
+                    <!-- Блок подсказки пароля -->
                     <LinearLayout
                         android:id="@+id/cardPasswordHint"
                         android:layout_width="match_parent"
@@ -141,7 +155,8 @@
                         android:layout_marginTop="8dp"
                         android:visibility="gone"
                         android:background="@drawable/bg_error_box"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:padding="12dp">
 
                         <TextView
                             android:layout_width="match_parent"
@@ -157,16 +172,19 @@
                             android:text="@string/pass_req_1"
                             android:textColor="@color/text_black"
                             android:layout_marginTop="4dp"/>
+
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/pass_req_2"
                             android:textColor="@color/text_black"/>
+
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/pass_req_3"
                             android:textColor="@color/text_black"/>
+
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -184,7 +202,6 @@
                             android:textSize="20sp"
                             android:layout_gravity="end"/>
                     </LinearLayout>
-                    <!-- КОНЕЦ БЛОКА ПОДСКАЗКИ -->
 
                     <EditText
                         android:id="@+id/etPassword"
@@ -206,7 +223,6 @@
                         android:inputType="textPassword"
                         android:layout_marginTop="12dp"/>
 
-                    <!-- Чекбоксы -->
                     <CheckBox
                         android:id="@+id/cbAgreement"
                         android:layout_width="match_parent"
