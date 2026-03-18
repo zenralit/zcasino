@@ -186,6 +186,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
     private void highlightColorButton(Button selected) {
         btnRed.setBackgroundTintList(getColorStateList(android.R.color.darker_gray));
         btnBlack.setBackgroundTintList(getColorStateList(android.R.color.darker_gray));
@@ -209,9 +210,9 @@ public class MainActivity extends AppCompatActivity {
                 if (savedBalance != null) {
                     balance = savedBalance.intValue();
                     updateBalance();
-                    saveBalance();
                 }
             } else {
+
                 saveBalance();
             }
         }).addOnFailureListener(e -> {
