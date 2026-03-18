@@ -3,7 +3,6 @@ package com.example.zkazino;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
 import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -15,6 +14,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -24,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView tvReel1, tvReel2, tvReel3, tvResult;
 
-    private View rouletteCircle;
+    //private View rouletteCircle;
     private TextView rouletteResult, tvRouletteResult;
     private Button btnRed, btnBlack, btnGreen;
     private Button btnBetMinus, btnBetPlus, btnRouletteSpin;
@@ -39,16 +40,26 @@ public class MainActivity extends AppCompatActivity {
 
     private Random random = new Random();
     private boolean isSpinning = false;
-    private String[] symbols = {"🍒", "🍋", "⭐",  "7️⃣"};
+    private String[] symbols = {"🍒", "🍋", "⭐", "💎", "7️⃣"};
 
     private boolean isRouletteSpinning = false;
-    private int selectedColor = 0; // 0=none, 1=red, 2=black, 3=green
+    private int selectedColor = 0;
     private int rouletteBet = 100;
     private int[] rouletteNumbers = {0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26};
     private int[] redNumbers = {1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36};
 
     private int balance = 1000;
     private static final int SPIN_COST = 50;
+
+    private void saveBalance() {
+        userRef.update("balance", balance)
+                .addOnSuccessListener(aVoid -> {
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Ошибка сохранения: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         tvReel3 = findViewById(R.id.tvReel3);
         tvResult = findViewById(R.id.tvResult);
 
-        rouletteCircle = findViewById(R.id.rouletteCircle);
+        //rouletteCircle = findViewById(R.id.rouletteCircle);
         rouletteResult = findViewById(R.id.rouletteResult);
         tvRouletteResult = findViewById(R.id.tvRouletteResult);
         btnRed = findViewById(R.id.btnRed);
@@ -158,14 +169,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Меню
         menuLogout.setOnClickListener(v -> logout());
         menuProfile.setOnClickListener(v -> {
-            Toast.makeText(this, "Профиль в разработке", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(MainActivity.this, ProfileActivity.class));
             drawerLayout.close();
         });
         menuHistory.setOnClickListener(v -> {
-            Toast.makeText(this, "История в разработке", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(MainActivity.this, ProfileActivity.class));
             drawerLayout.close();
         });
         menuSettings.setOnClickListener(v -> {
@@ -198,7 +208,11 @@ public class MainActivity extends AppCompatActivity {
                     balance = savedBalance.intValue();
                     updateBalance();
                 }
+            } else {
+                saveBalance();
             }
+        }).addOnFailureListener(e -> {
+            Toast.makeText(this, "Ошибка загрузки баланса: " + e.getMessage(), Toast.LENGTH_LONG).show();
         });
     }
 
@@ -248,13 +262,14 @@ public class MainActivity extends AppCompatActivity {
             winAmount = 50;
             tvResult.setText("ДВА ОДИНАКОВЫХ! +$" + winAmount);
         } else {
-            tvResult.setText("❌ Попробуй ещё раз");
+            tvResult.setText("Попробуй ещё раз");
         }
 
         if (winAmount > 0) {
+            int oldBalance = balance;
             balance += winAmount;
             updateBalance();
-            saveBalance();
+            saveBalanceWithHistory(oldBalance, winAmount);
         }
     }
 
@@ -270,7 +285,7 @@ public class MainActivity extends AppCompatActivity {
         );
         rotate.setDuration(2000);
         rotate.setFillAfter(true);
-        rouletteCircle.startAnimation(rotate);
+        // rouletteCircle.startAnimation(rotate);
 
         new Handler().postDelayed(() -> {
             int finalNumber = rouletteNumbers[random.nextInt(rouletteNumbers.length)];
@@ -311,7 +326,7 @@ public class MainActivity extends AppCompatActivity {
                 winAmount = rouletteBet * 35;
                 resultText = "ЗЕРО! Выигрыш x35! +$" + winAmount;
             } else {
-                resultText = "0️⃣ Зеро! Вы проиграли";
+                resultText = "Зеро! Вы проиграли";
             }
         } else if (resultColor == 1) {
             if (selectedColor == 1) {
@@ -332,9 +347,10 @@ public class MainActivity extends AppCompatActivity {
         tvRouletteResult.setText(resultText + " (выпало " + number + ")");
 
         if (winAmount > 0) {
+            int oldBalance = balance;
             balance += winAmount;
             updateBalance();
-            saveBalance();
+            saveBalanceWithHistory(oldBalance, winAmount);
         }
     }
 
@@ -342,8 +358,29 @@ public class MainActivity extends AppCompatActivity {
         tvBalance.setText("$ " + balance);
     }
 
-    private void saveBalance() {
-        userRef.update("balance", balance);
+    private void saveBalanceWithHistory(int oldBalance, int winAmount) {
+        userRef.update("balance", balance)
+                .addOnSuccessListener(aVoid -> {
+                    saveBalanceHistory(oldBalance, winAmount);
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Ошибка сохранения баланса: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
+    }
+
+    private void saveBalanceHistory(int oldBalance, int winAmount) {
+        Map<String, Object> historyEntry = new HashMap<>();
+        historyEntry.put("oldBalance", oldBalance);
+        historyEntry.put("newBalance", balance);
+        historyEntry.put("winAmount", winAmount);
+        historyEntry.put("timestamp", System.currentTimeMillis());
+
+        userRef.collection("balanceHistory")
+                .add(historyEntry)
+                .addOnSuccessListener(documentReference -> {
+                })
+                .addOnFailureListener(e -> {
+                });
     }
 
     private void logout() {
