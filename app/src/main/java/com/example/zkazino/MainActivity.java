@@ -121,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
                     balance -= SPIN_COST;
                     updateBalance();
                     spinSlots();
+                    saveBalance();
                 } else {
                     Toast.makeText(this, "Недостаточно средств!", Toast.LENGTH_SHORT).show();
                 }
@@ -166,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
                 balance -= rouletteBet;
                 updateBalance();
                 spinRoulette();
+                saveBalance();
             }
         });
 
@@ -207,6 +209,7 @@ public class MainActivity extends AppCompatActivity {
                 if (savedBalance != null) {
                     balance = savedBalance.intValue();
                     updateBalance();
+                    saveBalance();
                 }
             } else {
                 saveBalance();
@@ -269,6 +272,7 @@ public class MainActivity extends AppCompatActivity {
             int oldBalance = balance;
             balance += winAmount;
             updateBalance();
+            saveBalance();
             saveBalanceWithHistory(oldBalance, winAmount);
         }
     }
@@ -350,6 +354,7 @@ public class MainActivity extends AppCompatActivity {
             int oldBalance = balance;
             balance += winAmount;
             updateBalance();
+            saveBalance();
             saveBalanceWithHistory(oldBalance, winAmount);
         }
     }
