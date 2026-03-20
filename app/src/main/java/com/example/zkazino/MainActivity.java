@@ -24,8 +24,6 @@ public class MainActivity extends AppCompatActivity {
     private DocumentReference userRef;
 
     private TextView tvReel1, tvReel2, tvReel3, tvResult;
-
-    //private View rouletteCircle;
     private TextView rouletteResult, tvRouletteResult;
     private Button btnRed, btnBlack, btnGreen;
     private Button btnBetMinus, btnBetPlus, btnRouletteSpin;
@@ -60,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
         tvReel3 = findViewById(R.id.tvReel3);
         tvResult = findViewById(R.id.tvResult);
 
-        //rouletteCircle = findViewById(R.id.rouletteCircle);
         rouletteResult = findViewById(R.id.rouletteResult);
         tvRouletteResult = findViewById(R.id.tvRouletteResult);
         btnRed = findViewById(R.id.btnRed);
@@ -107,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = findViewById(R.id.drawerLayout);
 
         menuProfile = findViewById(R.id.menuProfile);
-        menuHistory = findViewById(R.id.menuHistory);
+
         menuSettings = findViewById(R.id.menuSettings);
         menuLogout = findViewById(R.id.menuLogout);
     }
@@ -176,16 +172,12 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, ProfileActivity.class));
             drawerLayout.close();
         });
-        menuHistory.setOnClickListener(v -> {
-            startActivity(new Intent(MainActivity.this, ProfileActivity.class));
-            drawerLayout.close();
-        });
+
         menuSettings.setOnClickListener(v -> {
             Toast.makeText(this, "Настройки в разработке", Toast.LENGTH_SHORT).show();
             drawerLayout.close();
         });
     }
-
 
     private void highlightColorButton(Button selected) {
         btnRed.setBackgroundTintList(getColorStateList(android.R.color.darker_gray));
@@ -212,7 +204,6 @@ public class MainActivity extends AppCompatActivity {
                     updateBalance();
                 }
             } else {
-
                 saveBalance();
             }
         }).addOnFailureListener(e -> {
@@ -290,7 +281,6 @@ public class MainActivity extends AppCompatActivity {
         );
         rotate.setDuration(2000);
         rotate.setFillAfter(true);
-        // rouletteCircle.startAnimation(rotate);
 
         new Handler().postDelayed(() -> {
             int finalNumber = rouletteNumbers[random.nextInt(rouletteNumbers.length)];
@@ -336,16 +326,16 @@ public class MainActivity extends AppCompatActivity {
         } else if (resultColor == 1) {
             if (selectedColor == 1) {
                 winAmount = rouletteBet * 2;
-                resultText = "🔴 КРАСНОЕ! Выигрыш x2! +$" + winAmount;
+                resultText = "КРАСНОЕ! Выигрыш x2! +$" + winAmount;
             } else {
-                resultText = "🔴 Красное! Вы проиграли";
+                resultText = "Красное! Вы проиграли";
             }
         } else if (resultColor == 2) {
             if (selectedColor == 2) {
                 winAmount = rouletteBet * 2;
-                resultText = "⚫ ЧЁРНОЕ! Выигрыш x2! +$" + winAmount;
+                resultText = "ЧЁРНОЕ! Выигрыш x2! +$" + winAmount;
             } else {
-                resultText = "⚫ Чёрное! Вы проиграли";
+                resultText = "Чёрное! Вы проиграли";
             }
         }
 
